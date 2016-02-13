@@ -26,22 +26,55 @@
         <meta name="msapplication-tap-highlight" content="no" />
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <title>Hello World</title>
+	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.14.1/mapbox-gl.js'></script>
+    	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.14.1/mapbox-gl.css' rel='stylesheet' />
+	<!-- <link rel="stylesheet" type="text/css" href="css/index.css" /> -->
+	<style>
+            body { margin:0; padding:0; }
+            #map { width:75px; height:75px }
+	    .app { border:1px solid black }
+    	</style>
+        <title>Sexy Maps!</title>
     </head>
     <body>
         <div class="app">
-            <h1>Welcome to YelpGap</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
-            </div>
+	    <div id='map'></div>
         </div>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript">
             app.initialize();
+	    // onSuccess Callback
+	    // This method accepts a Position object, which contains the
+	    // current GPS coordinates
+	    //
+	    var onSuccess = function(position) {
+		alert('Latitude: '          + position.coords.latitude          + '\n' +
+	              'Longitude: '         + position.coords.longitude         + '\n' +
+	              'Altitude: '          + position.coords.altitude          + '\n' +
+          	      'Accuracy: '          + position.coords.accuracy          + '\n' +
+          	      'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
+          	      'Heading: '           + position.coords.heading           + '\n' +
+          	      'Speed: '             + position.coords.speed             + '\n' +
+          	      'Timestamp: '         + position.timestamp                + '\n');
+		mapboxgl.accessToken = 'pk.eyJ1IjoiYWxpYXdhcmQiLCJhIjoiY2lrbGYzOXFtMGljOXYwa214dzdnOTNqMyJ9.-Pbx8QCBSK8Sifo-q7NrOA';
+	    	var map = new mapboxgl.Map({
+    	    	    container: 'map', // container id
+    	    	    style: 'mapbox://styles/mapbox/streets-v8', //stylesheet location
+    	    	    center: [position.coords.longitude, position.coords.latitude], // starting position
+    	    	    zoom: 9 // starting zoom
+	        });;
+	    };
+
+	    // onError Callback receives a PositionError object
+	    //
+	    function onError(error) {
+    		alert('code: '    + error.code    + '\n' +
+        	      'message: ' + error.message + '\n');
+	    }
+
+	    navigator.geolocation.getCurrentPosition(onSuccess, onError);
+	    
         </script>
     </body>
 </html>
