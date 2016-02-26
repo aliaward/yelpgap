@@ -4,16 +4,19 @@
 <head>
     <meta charset='utf-8' />
     <title></title>
-    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no'
-    />
+    <meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1' />
+    <!--,user-scalable=no'    />-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.14.1/mapbox-gl.js'></script>
     <script type="text/javascript" src="http://oauth.googlecode.com/svn/code/javascript/oauth.js"></script>
     <script type="text/javascript" src="http://oauth.googlecode.com/svn/code/javascript/sha1.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script src="//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.14.1/mapbox-gl.css' rel='stylesheet'
     />
     <style>
-        body {
+        html, body {
             margin: 0;
             padding: 0;
         }
@@ -21,7 +24,23 @@
             position: absolute;
             top: 0;
             width: 100%;
-            height: 50%
+            height: 50%;
+        }
+        #result {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 50%;
+            overflow: scroll; 
+        }
+        html, .ui-mobile, .ui-mobile body {
+            height: 235px;
+        }
+        .ui-mobile, .ui-mobile .ui-page {
+            min-height: 235px;
+        }
+        .ui-content{
+            padding:10px 15px 0px 15px;
         }
     </style>
 </head>
@@ -29,6 +48,14 @@
 <body>
 
     <div id='map'></div>
+    <div id='result'>
+        <!--<div style="max-height:240px; min-height:240px;">--> 
+            <div class="ui-content">
+                <div id="resultSet" data-role="collapsible-set" data-theme="a" data-collapsed-icon="arrow-r" data-expanded-icon="arrow-d">
+                </div>
+            </div>
+        <!--</div>--> 
+    </div>
     <script>
        
         // onSuccess Callback
@@ -43,7 +70,6 @@
           //
           // Update with your auth tokens.
           //
-
         };
 
         var accessor = {
@@ -72,6 +98,7 @@ OAuth.SignatureMethod.sign(message, accessor);
 var parameterMap = OAuth.getParameterMap(message.parameters);
 parameterMap.oauth_signature = OAuth.percentEncode(parameterMap.oauth_signature)
 console.log(parameterMap);
+
 
 $.ajax({
   'url': message.action,
@@ -102,6 +129,8 @@ var source = {
                     for (i in businesses)
                     {
                         var business = businesses[i];
+                        var businessHTML = '<div data-role="collapsible"><h3>'+ business.name + '</h3><p>' + business.snippet_text + '</p></div>';
+                        $("#resultSet").append(businessHTML);
                         source.data.features.push({
                                             "type": "Feature",
                                             "geometry":
@@ -116,6 +145,7 @@ var source = {
                                             }
                                         });
                      }
+                    // refreshPage();
                      map.on('style.load', function()
                             {
                                 map.addSource("markers",source);
@@ -189,7 +219,6 @@ var source = {
 
 });
 
-
             //end of onSuccess
         };
 
@@ -201,6 +230,14 @@ var source = {
                 'message: ' + error.message + '\n');
         }
 
+        function refreshPage()
+        {
+            jQuery.mobile.changePage(window.location.href, {
+                allowSamePageTransition: true,
+                transition: 'none',
+                reloadPage: true
+            });
+        } 
         navigator.geolocation.getCurrentPosition(onSuccess, onError);
     </script>
 
